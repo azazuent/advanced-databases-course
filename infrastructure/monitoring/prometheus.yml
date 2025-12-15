@@ -1,0 +1,21 @@
+# Глобальные настройки Prometheus
+global:
+  scrape_interval: 15s      # Собирать метрики каждые 15 секунд
+  evaluation_interval: 15s  # Оценивать правила каждые 15 секунд
+  external_labels:
+    monitor: 'postgres-dev-monitor'
+
+# Конфигурация сборки метрик
+scrape_configs:
+  # Метрики самого Prometheus
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # Метрики PostgreSQL через postgres_exporter
+  - job_name: 'postgres'
+    static_configs:
+      - targets: ['postgres_exporter:9187']
+        labels:
+          instance: 'postgres-dev'
+          database: 'myapp'
