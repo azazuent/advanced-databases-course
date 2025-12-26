@@ -19,3 +19,7 @@ scrape_configs:
         labels:
           instance: 'postgres-dev'
           database: 'myapp'
+  
+  - job_name: "clickhouse"
+    static_configs:
+      - targets: ["clickhouse:9363"]

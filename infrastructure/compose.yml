@@ -11,8 +11,8 @@ services:
       - "55432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./configs/postgresql.conf:/etc/postgresql/postgresql.conf
-      - ./init-scripts:/docker-entrypoint-initdb.d
+      - ./postgres/configs/postgresql.conf:/etc/postgresql/postgresql.conf
+      - ./postgres/init-scripts:/docker-entrypoint-initdb.d
     command: postgres -c config_file=/etc/postgresql/postgresql.conf
     restart: unless-stopped
     healthcheck:
@@ -42,7 +42,7 @@ services:
     image: prom/prometheus:latest
     container_name: prometheus
     volumes:
-      - ../monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
       - prometheus_data:/prometheus
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
@@ -52,6 +52,7 @@ services:
       - "55434:9090"
     depends_on:
       - postgres_exporter
+      - clickhouse
     restart: unless-stopped
     networks:
       - monitoring
@@ -70,7 +71,25 @@ services:
       - "55435:3000"
     depends_on:
       - prometheus
+      - clickhouse
     restart: unless-stopped
+    networks:
+      - monitoring
+
+  clickhouse:
+    image: clickhouse/clickhouse-server:latest
+    container_name: clickhouse
+    ports:
+      - "8123:8123"   # HTTP
+      - "9000:9000"   # Native
+      - "9363:9363"   # Prometheus metrics
+    volumes:
+      - clickhouse_data:/var/lib/clickhouse
+      - ./clickhouse/config.xml:/etc/clickhouse-server/config.d/prometheus.xml:ro
+    ulimits:
+      nofile:
+        soft: 262144
+        hard: 262144
     networks:
       - monitoring
 
@@ -78,6 +97,7 @@ volumes:
   postgres_data:
   prometheus_data:
   grafana_data:
+  clickhouse_data:
 
 networks:
   monitoring:

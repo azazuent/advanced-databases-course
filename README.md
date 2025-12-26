@@ -10,6 +10,7 @@
 - **postgres_exporter** - экспортер метрик для Prometheus
 - **Prometheus** - сбор и хранение метрик
 - **Grafana** - визуализация метрик
+- **Clickhouse** - для анализа данных
 
 ## Требования
 
@@ -23,5 +24,5 @@
 ### 1. Запуск инфраструктуры
 
 ```bash
-cd infrastructure/postgres
+cd infrastructure
 docker compose up -d
