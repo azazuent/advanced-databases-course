@@ -93,11 +93,25 @@ services:
     networks:
       - monitoring
 
+  mongo:
+    image: mongo:latest
+    container_name: mongo
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root
+    command: ["mongod", "--auth"]
+
 volumes:
   postgres_data:
   prometheus_data:
   grafana_data:
   clickhouse_data:
+  mongo_data:
 
 networks:
   monitoring:
